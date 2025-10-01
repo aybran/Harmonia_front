@@ -51,7 +51,7 @@ Garantir interface moderna e responsiva
 ✨ Funcionalidades
 👨‍⚕️ Para Psiquiatras
 
-Dashboard Personalizado: Visão geral com KPIs e próximos agendamentos
+Dashboard Perrsonalizado: Visão geral com KPIs e próximos agendamentos
 
 Gestão de Pacientes: Lista completa com informações detalhadas
 

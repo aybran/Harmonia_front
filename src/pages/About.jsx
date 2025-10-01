@@ -84,7 +84,7 @@ export const About = () => {
             <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mx-auto shadow-xl">
               <img src="/logo.webp" alt="Bode Sistema Harmonia" className="w-16 h-16 rounded-2xl" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-dark">Sobre o  Sistema Harmonia</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-white">Sobre o Sistema Harmonia</h1>
             <div className="bg-white/80 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-xl text-dark">
               <p className="text-lg leading-relaxed mb-4">
                 O Bode Sistema Harmonia é a solução ideal para integrar tecnologia e cuidado social.
@@ -123,7 +123,7 @@ export const About = () => {
         {/* ================= PERGUNTAS E SOLUÇÕES ================= */}
         <section className="px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8 text-dark">Por que escolher o Bode Sistema Harmonia?</h2>
+            <h2 className="text-3xl font-bold text-center mb-8 text-white">Por que escolher o Bode Sistema Harmonia?</h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div className="bg-white/90 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg text-dark">
                 <h3 className="text-xl font-semibold mb-4">Principais Perguntas</h3>
@@ -154,7 +154,7 @@ export const About = () => {
         {/* ================= FUNCIONALIDADES ================= */}
         <section className="px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8 text-dark">Funcionalidades Principais</h2>
+            <h2 className="text-3xl font-bold text-center mb-8 text-white">Funcionalidades Principais</h2>
             <div className="grid md:grid-cols-2 gap-6">
               {features.map((feature, index) => (
                 <div key={index} className="bg-white/90 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg text-dark">
@@ -176,7 +176,7 @@ export const About = () => {
         {/* ================= VALORES ================= */}
         <section className="px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8 text-dark">Nossos Valores</h2>
+            <h2 className="text-3xl font-bold text-center mb-8 text-white">Nossos Valores</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {values.map((value, index) => (
                 <div key={index} className="bg-white/90 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg text-center text-dark">
@@ -194,4 +194,4 @@ export const About = () => {
       </div>
     </div>
   );
-};
+};  
