@@ -1,18 +1,7 @@
-// 📌 Sidebar reutilizável
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import {
-  Menu,
-  X,
-  LogOut,
-  BarChart3,
-  Calendar,
-  User,
-  Users,
-  MessageCircle,
-  Bell
-} from 'lucide-react';
+import { Menu, X, LogOut, BarChart3, Calendar, User, Users, MessageCircle, Bell } from 'lucide-react';
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,19 +14,22 @@ export const Sidebar = () => {
     navigate('/login');
   };
 
-  const navLinks =
-    user?.type === 'psicologo'
-      ? [
-        { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },
-        { to: '/solicitacoes', label: 'Solicitações', icon: Bell },
-        { to: '/pacientes', label: 'Pacientes', icon: Users },
-        { to: '/chat-ia', label: 'Chat IA', icon: MessageCircle },
-        { to: '/relatorios', label: 'Relatórios', icon: BarChart3 }
-      ]
-      : [
-        { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },
-        { to: '/agendamento', label: 'Solicitar Sessão', icon: Calendar }
-      ];
+  // Apenas links para o usuário do tipo paciente
+  const navLinks = user?.type === 'paciente'
+    ? [
+      { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },
+      { to: '/agendamento', label: 'Solicitar Sessão', icon: Calendar },
+      { to: '/historico-sessoes', label: 'Histórico de Sessões', icon: Users }
+    ]
+    :[
+      { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },
+      { to: '/solicitacoes', label: 'Solicitações', icon: Bell },
+      { to: '/pacientes', label: 'Pacientes', icon: Users },
+      { to: '/chat-ia', label: 'Chat IA', icon: MessageCircle },
+      { to: '/relatorios', label: 'Relatórios', icon: BarChart3 }
+    ];
+
+  // Se precisar suportar outros tipos futuramente, pode adicionar aqui
 
   const isActive = (path) => location.pathname === path;
 
@@ -56,11 +48,12 @@ export const Sidebar = () => {
           }`}
       >
         <div className="flex flex-col h-full">
-          {/* Logo atualizado */}
           <div className="flex items-center space-x-3 p-6 border-b border-white/10">
-            <img src="/logo.png" alt="Sistema Harmonia" className="w-10 h-10 rounded-lg" />
+            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
+              <img src="/logo2.png" alt="Sistema Harmonia" className="w-10 h-10 rounded-lg" />
+            </div>
             <div>
-              <span className="text-xl font-bold text-white">Sistema Harmonia</span>
+              <span className="text-xl font-bold text-white">Lunysse</span>
               <p className="text-xs text-white/60">Sistema Psicológico</p>
             </div>
           </div>
@@ -79,21 +72,25 @@ export const Sidebar = () => {
 
           <nav className="flex-1 p-4">
             <ul className="space-y-2">
-              {navLinks.map((link) => (
-                <li key={link.to}>
-                  <Link
-                    to={link.to}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${isActive(link.to)
+              {navLinks.length === 0 ? (
+                <li className="text-white px-4 py-3">Nenhum link disponível</li>
+              ) : (
+                navLinks.map(link => (
+                  <li key={link.to}>
+                    <Link
+                      to={link.to}
+                      className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${isActive(link.to)
                         ? 'bg-light text-black'
                         : 'text-white/70 hover:text-white hover:bg-white/10'
-                      }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <link.icon size={20} />
-                    <span>{link.label}</span>
-                  </Link>
-                </li>
-              ))}
+                        }`}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <link.icon size={20} />
+                      <span>{link.label}</span>
+                    </Link>
+                  </li>
+                ))
+              )}
             </ul>
           </nav>
 

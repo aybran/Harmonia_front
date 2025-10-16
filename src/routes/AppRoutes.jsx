@@ -12,10 +12,11 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 // Páginas públicas
 import { Home } from '../pages/Home';
 import { About } from '../pages/About';
+
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
-
-// Páginas protegidas (apenas para usuários autenticados)
+import Contato from '../pages/Contact';
+// Páginas protegidas
 import { DashboardPsicologo } from '../pages/DashboardPsicologo';
 import { DashboardPaciente } from '../pages/DashboardPaciente';
 import { Agendamento } from '../pages/Agendamento';
@@ -24,67 +25,49 @@ import { Pacientes } from '../pages/Pacientes';
 import { PacienteDetalhes } from '../pages/PacienteDetalhes';
 import { SessaoDetalhes } from '../pages/SessaoDetalhes';
 import { ChatIA } from '../pages/ChatIA';
+import { HistoricoSessoes } from '../pages/Historico_de_Sessoes';
 import { Solicitacoes } from '../pages/Solicitacoes';
 import { NotFound } from '../pages/NotFound';
 
-/* ==============================
-   Componente de rota protegida
-   ============================== */
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth(); // Obtém usuário e estado de carregamento
-
-  if (loading) return <LoadingSpinner size="lg" />; // Mostra spinner enquanto carrega
-  if (!user) return <Navigate to="/login" replace />; // Redireciona não autenticados para login
-
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingSpinner size="lg" />;
+  if (!user) return <Navigate to="/login" replace />;
   return (
     <div className="min-h-screen flex">
-      <Sidebar /> {/* Sidebar lateral sempre visível */}
+      <Sidebar />
       <main className="flex-1 lg:ml-64 p-8">
-        {children} {/* Conteúdo da página protegida */}
+        {children}
       </main>
     </div>
   );
 };
 
-/* ==============================
-   Componente de rota pública
-   ============================== */
 const PublicRoute = ({ children }) => {
-  const { user, loading } = useAuth(); // Obtém usuário e estado de carregamento
-
-  if (loading) return <LoadingSpinner size="lg" />; // Mostra spinner enquanto carrega
-  if (user) return <Navigate to="/dashboard" replace />; // Redireciona usuário logado para dashboard
-
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingSpinner size="lg" />;
+  if (user) return <Navigate to="/dashboard" replace />;
   return (
     <div className="">
-      <PublicNavbar /> {/* Navbar pública */}
+      <PublicNavbar />
       <main className="">
-        {children} {/* Conteúdo da página pública */}
+        {children}
       </main>
     </div>
   );
 };
 
-/* ==============================
-   Componente Dashboard condicional
-   ============================== */
 const Dashboard = () => {
   const { user } = useAuth();
-  // Retorna dashboard específico baseado no tipo do usuário
   return user?.type === 'psicologo' ? <DashboardPsicologo /> : <DashboardPaciente />;
 };
 
-/* ==============================
-   Configuração de rotas da aplicação
-   ============================== */
 export const AppRoutes = () => {
   return (
     <Router>
       <Routes>
 
-        {/* ==============================
-           Rotas Públicas
-           ============================== */}
+        {/* Rotas Públicas */}
         <Route path="/" element={
           <PublicRoute>
             <Home />
@@ -94,6 +77,12 @@ export const AppRoutes = () => {
         <Route path="/about" element={
           <PublicRoute>
             <About />
+          </PublicRoute>
+        } />
+
+        <Route path="/contato" element={
+          <PublicRoute>
+            <Contato />
           </PublicRoute>
         } />
 
@@ -109,12 +98,10 @@ export const AppRoutes = () => {
           </PublicRoute>
         } />
 
-        {/* ==============================
-           Rotas Protegidas
-           ============================== */}
+        {/* Rotas Protegidas */}
         <Route path="/dashboard" element={
           <ProtectedRoute>
-            <Dashboard /> {/* Escolhe dashboard de psicólogo ou paciente */}
+            <Dashboard />
           </ProtectedRoute>
         } />
 
@@ -126,17 +113,20 @@ export const AppRoutes = () => {
 
         <Route path="/Chat-ia" element={
           <ProtectedRoute>
-            <ChatIA/>
+            <ChatIA />
           </ProtectedRoute>
         } />
-        
+        <Route path="/historico-sessoes" element={
+          <ProtectedRoute>
+            <HistoricoSessoes />
+          </ProtectedRoute>
+        } />
+
         <Route path="/Relatorios" element={
           <ProtectedRoute>
-            <Relatorios/>
+            <Relatorios />
           </ProtectedRoute>
         } />
-
-
 
         <Route path="/solicitacoes" element={
           <ProtectedRoute>
@@ -150,24 +140,19 @@ export const AppRoutes = () => {
           </ProtectedRoute>
         } />
 
-        <Route path="/PacienteDetalhes/:id" element={
+        <Route path="/Pacientes/:id" element={
           <ProtectedRoute>
-            <PacienteDetalhes/> {/* Página de detalhes de paciente específico */}
+            <PacienteDetalhes />
           </ProtectedRoute>
         } />
-
-       
-
-        <Route path="/SessaoDetalhes/:id" element={
+        <Route path="/sessao/:sessionId" element={
           <ProtectedRoute>
-            <SessaoDetalhes /> {/* Página de detalhes de paciente específico */}
+            <SessaoDetalhes /> {/* Detalhes de sessão específica */}
           </ProtectedRoute>
         } />
-
-        {/* ==============================
-           Rota para página 404
-           ============================== */}
+        {/* Rota 404 */}
         <Route path="*" element={<NotFound />} />
+
       </Routes>
     </Router>
   );

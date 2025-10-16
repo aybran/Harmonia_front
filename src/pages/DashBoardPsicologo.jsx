@@ -107,25 +107,25 @@ export const DashboardPsicologo = () => {
       {/* KPIs - Dados específicos do psicólogo logado */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="text-center">
-          <Users className="w-8 h-8 text-light mx-auto mb-2" />
+          <Users className="w-8 h-8 text-green-600 mx-auto mb-2" />
           <h3 className="text-2xl font-bold text-dark">{totalPatients}</h3>
           <p className="text-dark/70">Pacientes Ativos</p>
         </Card>
 
         <Card className="text-center">
-          <Calendar className="w-8 h-8 text-accent mx-auto mb-2" />
+          <Calendar className="w-8 h-8 text-green-600 mx-auto mb-2" />
           <h3 className="text-2xl font-bold text-dark">{todayAppointments.length}</h3>
           <p className="text-dark/70">Sessões Hoje</p>
         </Card>
 
         <Card className="text-center">
-          <CheckCheck className="w-8 h-8 text-medium mx-auto mb-2" />
+          <CheckCheck className="w-8 h-8 text-green-600 mx-auto mb-2" />
           <h3 className="text-2xl font-bold text-dark">{completedSessions}</h3>
           <p className="text-dark/70">Sessões Concluídas</p>
         </Card>
 
         <Card className="text-center">
-          <Bell className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+          <Bell className="w-8 h-8 text-green-500 mx-auto mb-2" />
           <h3 className="text-2xl font-bold text-dark">{pendingRequests}</h3>
           <p className="text-dark/70">Solicitações Pendentes</p>
         </Card>
@@ -134,11 +134,11 @@ export const DashboardPsicologo = () => {
       {/* Próximos Agendamentos - apenas se não for psicólogo novo */}
       {!isNewPsychologist && (
         <Card>
-          <h2 className="text-xl font-semibold text-dark mb-4">Próximos Agendamentos</h2>
+          <h2 className="text-xl font-semibold text-green-600 mb-4">Próximos Agendamentos</h2>
           {upcomingAppointments.length === 0 ? (
             <div className="text-center py-8">
-              <Calendar className="w-16 h-16 text-dark/30 mx-auto mb-4" />
-              <p className="text-dark/70 mb-2">Nenhum agendamento futuro encontrado.</p>
+              <Calendar className="w-16 h-16 text-green-600 mx-auto mb-4" />
+              <p className="text-green-600 mb-2">Nenhum agendamento futuro encontrado.</p>
               <p className="text-sm text-dark/50">
                 {totalPatients === 0 
                   ? 'Você ainda não possui pacientes cadastrados.' 

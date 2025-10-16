@@ -113,7 +113,7 @@ export const Register = () => {
 
                 <div className="mt-6 text-center space-y-2">
                     <p className="text-dark/70">Não possui conta?</p>
-                    <Link to="/login" className="text-blue-700 font-bold hover:text-dark">Já tenho conta</Link>
+                    <Link to="/login" className="text-green-700 font-bold hover:text-dark">Já tenho conta</Link>
                 </div>
             </Card>
         </div>

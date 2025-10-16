@@ -1,38 +1,76 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+
 // Componente de botão reutilizável
 export const Button = ({
-  children, // Conteúdo interno do botão (texto ou ícones)
-  variant = 'primary', // Define o estilo visual (padrão: primary)
-  size = 'md', // Define o tamanho do botão (padrão: md)
-  loading = false, // Indica se o botão está em estado de carregamento
-  className = '', // Permite adicionar classes extras personalizadas
-  ...props // Captura outras props (ex: onClick, type, etc.)
+  children,
+  variant = 'primary',
+  size = 'md',
+  loading = false,
+  className = '',
+  ...props
 }) => {
-  // Classes base aplicadas em todos os botões
-  const baseClasses = 'font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
- 
-  // Estilos de acordo com o tipo de botão
+  const baseClasses =
+    'font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center gap-2';
+
   const variants = {
-    primary: 'bg-medium text-white hover:bg-accent focus:ring-light', // Botão principal
-    secondary: 'bg-medium/30 border border-light text-light hover:bg-accent hover:border-accent focus:ring-light' // Botão secundário
+    primary: 'bg-medium text-white hover:bg-accent focus:ring-light',
+    secondary:
+      'bg-medium/30 border border-light text-light hover:bg-accent hover:border-accent focus:ring-light',
+    back: 'bg-green-700 text-white hover:bg-green-800 focus:ring-green-500', // Botão Voltar verde
   };
- 
-  // Tamanhos disponíveis para o botão
+
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm', // Pequeno
-    md: 'px-4 py-2 text-base', // Médio (padrão)
-    lg: 'px-6 py-3 text-lg' // Grande
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-4 py-2 text-base',
+    lg: 'px-6 py-3 text-lg',
   };
- 
+
   return (
     <button
-      // Montagem final das classes CSS dinamicamente com base nas props
-      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-      disabled={loading} // Desabilita o botão quando está carregando
-      {...props} // Permite passar outras propriedades (ex: onClick, type)
+      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${loading ? 'opacity-50 cursor-not-allowed' : ''
+        } ${className}`}
+      disabled={loading}
+      {...props}
     >
-      {/* Renderiza "Carregando..." caso esteja em loading, senão mostra o conteúdo */}
       {loading ? 'Carregando...' : children}
     </button>
   );
 };
- 
+
+// Componente de detalhes do paciente (exemplo)
+export const DetalhesPaciente = ({ paciente }) => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md space-y-6">
+      {/* Botão Voltar */}
+      <Button variant="back" size="md" onClick={() => navigate(-1)}>
+        <ArrowLeft size={18} />
+        Voltar
+      </Button>
+
+      {/* Dados do paciente */}
+      <h1 className="text-2xl font-bold text-dark">{paciente.name}</h1>
+      <p>ID: {paciente.id}</p>
+      <p>Idade: {paciente.age} anos</p>
+      <p>Telefone: {paciente.phone}</p>
+      <p>Email: {paciente.email}</p>
+      {/* etc... */}
+    </div>
+  );
+};
+
+// Exemplo de uso
+const pacienteExemplo = {
+  id: 6,
+  name: 'Lucas Pereira',
+  age: 37,
+  phone: '(11) 99999-6666',
+  email: 'lucas.pereira@email.com',
+};
+
+export default function App() {
+  return <DetalhesPaciente paciente={pacienteExemplo} />;
+}

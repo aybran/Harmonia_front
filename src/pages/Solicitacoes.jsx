@@ -99,8 +99,8 @@ export const Solicitacoes = () => {
     <div className="space-y-6">
       {/* Cabeçalho com sino pulsando */}
       <div className="flex items-center gap-3">
-        <Bell className="w-10 h-10 text-white animate-pulse" />
-        <h1 className="text-2xl font-bold text-white">Notificações de Solicitação</h1>
+        <Bell className="w-10 h-10 text-green-600 animate-pulse" />
+        <h1 className="text-2xl font-bold text-green-600">Notificações de Solicitação</h1>
       </div>
 
       <div className="flex flex-col gap-4">
@@ -115,7 +115,7 @@ export const Solicitacoes = () => {
             <Card key={request.id} className="p-4 flex flex-col gap-3 shadow-md hover:shadow-lg transition">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
                     <User className="w-5 h-5 text-white" />
                   </div>
                   <div>
