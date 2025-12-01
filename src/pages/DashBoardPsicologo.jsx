@@ -1,24 +1,27 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { mockApi } from '../services/mockApi';
-import { Card } from '../components/Card';
-import { LoadingSpinner } from '../components/LoadingSpinner';
-import { Calendar, Users, Bell , CheckCheck} from 'lucide-react';
-
+import { appointmentService, patientService, requestService } from '../services/apiService';
+import { Calendar, Users, Bell, CheckCheck } from 'lucide-react';
+import { CardKpi } from '../components/Cardkpi';
+import { AppointmentCard } from '../components/AppointmentCard';
 export const DashboardPsicologo = () => {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [patients, setPatients] = useState([]);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [searchTerm, setSearchTerm] = useState('');
   const loadData = useCallback(async () => {
     try {
+      console.log('Carregando dados do dashboard para psicologo:', user.id);
       const [appointmentsData, patientsData, requestsData] = await Promise.all([
-        mockApi.getAppointments(user.id, 'psicologo'),
-        mockApi.getPatients(user.id),
-        mockApi.getRequests(user.id)
+       appointmentService.getAppointments(),
+       patientService.getPatients(),
+       requestService.getRequests('pendente')
       ]);
+      console.log('Agendamentos:', appointmentsData);
+      console.log('Pacientes:', patientsData);
+      console.log('Solicitações:', requestsData);
       setAppointments(appointmentsData);
       setPatients(patientsData);
       setRequests(requestsData);
@@ -28,151 +31,171 @@ export const DashboardPsicologo = () => {
       setLoading(false);
     }
   }, [user.id]);
-
+ 
   useEffect(() => {
     loadData();
   }, [loadData]);
-
-  // Recarrega quando a página fica visível e a cada 5 segundos
+ 
   useEffect(() => {
     const handleFocus = () => loadData();
     window.addEventListener('focus', handleFocus);
-    
-    const interval = setInterval(loadData, 5000); // Recarrega a cada 5 segundos
-    
+    const interval = setInterval(loadData, 5000);
+ 
     return () => {
       window.removeEventListener('focus', handleFocus);
       clearInterval(interval);
     };
   }, [loadData]);
-
-  if (loading) return <LoadingSpinner size="lg" />;
-
-  // Filtra agendamentos de hoje para o psicólogo logado (apenas agendados)
+ 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-10">
+        <div className="w-12 h-12 border-4 border-light border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+ 
+ 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+ 
   const todayAppointments = appointments.filter(apt => {
     const appointmentDate = new Date(apt.date);
     appointmentDate.setHours(0, 0, 0, 0);
-    
-    const isToday = appointmentDate.getTime() === today.getTime();
-    const isPsychologist = apt.psychologistId === user.id;
-    const isScheduled = apt.status === 'agendado';
-    
-    return isToday && isPsychologist && isScheduled;
+    return appointmentDate.getTime() === today.getTime() &&
+           apt.psychologistId === user.id &&
+           apt.status === 'agendado';
   });
-
-  // Estatísticas baseadas nos dados reais do psicólogo
+ 
   const totalPatients = patients.length;
-  const completedSessions = appointments.filter(apt => 
-    apt.status === 'concluido' && apt.psychologistId === user.id
+  const completedSessions = appointments.filter(
+    apt => apt.status === 'concluido' && apt.psychologistId === user.id
   ).length;
-  const pendingRequests = requests.filter(req => 
-    req.status === 'pendente' && req.preferredPsychologist === user.id
+  const pendingRequests = requests.filter(
+    req => req.status === 'pendente' && req.preferredPsychologist === user.id
   ).length;
-  
-  // Próximos agendamentos do psicólogo
-  const upcomingAppointments = appointments.filter(apt => 
-    new Date(apt.date) >= new Date() && 
-    apt.status === 'agendado' &&
-    apt.psychologistId === user.id
-  ).slice(0, 5);
-
-  // Verifica se é um psicólogo novo (sem dados)
-  const isNewPsychologist = totalPatients === 0 && appointments.length === 0 && requests.length === 0;
-
+ 
+  const upcomingAppointments = appointments
+    .filter(
+      apt =>
+        new Date(apt.date) >= new Date() &&
+        apt.status === 'agendado' &&
+        apt.psychologistId === user.id
+    )
+    .slice(0, 5);
+ 
+  const isNewPsychologist =
+    totalPatients === 0 && appointments.length === 0 && requests.length === 0;
+ 
+ 
+  const filteredAppointments = upcomingAppointments.filter(apt => {
+    const patient = patients.find(p => p.id === apt.patientId);
+    if (!patient) return false;
+    return patient.name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+ 
   return (
     <div className="space-y-6">
+      {/* Cabeçalho */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-dark">Dashboard</h1>
         <p className="text-white">Bem-vindo, {user.name}</p>
       </div>
-
+ 
       {/* Mensagem para psicólogos novos */}
       {isNewPsychologist && (
-        <Card className="text-center py-8 border-2 border-dashed border-light/30">
+        <div className="bg-white rounded-lg shadow-md p-6 text-center border-2 border-dashed border-light/30">
           <Users className="w-16 h-16 text-light/50 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-dark mb-2">Bem-vindo ao Lunysse!</h3>
-          <p className="text-dark/70 mb-4">
-            Você é novo por aqui. Seus pacientes e agendamentos aparecerão neste dashboard 
-            conforme você começar a receber solicitações e agendar sessões.
-          </p>
+          <h3 className="text-xl font-semibold text-dark mb-2">
+  Bem-vindo ao Lunysse, {user.name}! 🌟
+</h3>
+<p className="text-dark/70 mb-4">
+  Estamos felizes por ter você com a gente. Conforme você começar a receber solicitações e marcar sessões, este painel será preenchido automaticamente.
+</p>
+<p className="text-sm text-dark/50">
+  Enquanto isso, aproveite para explorar o menu lateral e conhecer todas as ferramentas que preparamos para te apoiar no cuidado com seus pacientes.
+</p>
+ 
           <p className="text-sm text-dark/50">
-            Explore o menu lateral para conhecer todas as funcionalidades disponíveis.
+            Explore o menu lateral para conhecer todas as funcionalidades
+            disponíveis.
           </p>
-        </Card>
+        </div>
       )}
-
-      {/* KPIs - Dados específicos do psicólogo logado */}
+ 
+      {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="text-center">
-          <Users className="w-8 h-8 text-green-600 mx-auto mb-2" />
-          <h3 className="text-2xl font-bold text-dark">{totalPatients}</h3>
-          <p className="text-dark/70">Pacientes Ativos</p>
-        </Card>
-
-        <Card className="text-center">
-          <Calendar className="w-8 h-8 text-green-600 mx-auto mb-2" />
-          <h3 className="text-2xl font-bold text-dark">{todayAppointments.length}</h3>
-          <p className="text-dark/70">Sessões Hoje</p>
-        </Card>
-
-        <Card className="text-center">
-          <CheckCheck className="w-8 h-8 text-green-600 mx-auto mb-2" />
-          <h3 className="text-2xl font-bold text-dark">{completedSessions}</h3>
-          <p className="text-dark/70">Sessões Concluídas</p>
-        </Card>
-
-        <Card className="text-center">
-          <Bell className="w-8 h-8 text-green-500 mx-auto mb-2" />
-          <h3 className="text-2xl font-bold text-dark">{pendingRequests}</h3>
-          <p className="text-dark/70">Solicitações Pendentes</p>
-        </Card>
+      <CardKpi
+  icon={Users}
+  value={totalPatients}
+  label="Pacientes Ativos"
+/>
+<CardKpi
+  icon={Calendar}
+  value={todayAppointments.length}
+  label="Sessões marcadas para hoje"
+/>
+<CardKpi
+  icon={CheckCheck}
+  value={completedSessions}
+  label="Sessões já concluídas"
+/>
+<CardKpi
+  icon={Bell}
+  value={pendingRequests}
+  label="Solicitações aguardando resposta"
+/>
+ 
       </div>
-
-      {/* Próximos Agendamentos - apenas se não for psicólogo novo */}
+ 
+     
       {!isNewPsychologist && (
-        <Card>
-          <h2 className="text-xl font-semibold text-green-600 mb-4">Próximos Agendamentos</h2>
-          {upcomingAppointments.length === 0 ? (
+        <div className="mt-4">
+          <input
+            type="text"
+            placeholder="Digite o nome do paciente para encontrar agendamentos..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+          />
+        </div>
+      )}
+ 
+      {/* Próximos Agendamentos */}
+      {!isNewPsychologist && (
+        <div className="bg-white rounded-lg shadow-md p-6 mt-4">
+          <h2 className="text-xl font-semibold text-dark mb-4">
+            Próximos Agendamentos
+          </h2>
+          {filteredAppointments.length === 0 ? (
             <div className="text-center py-8">
-              <Calendar className="w-16 h-16 text-green-600 mx-auto mb-4" />
-              <p className="text-green-600 mb-2">Nenhum agendamento futuro encontrado.</p>
-              <p className="text-sm text-dark/50">
-                {totalPatients === 0 
-                  ? 'Você ainda não possui pacientes cadastrados.' 
-                  : 'Todos os agendamentos estão em dia!'}
-              </p>
+              <Calendar className="w-16 h-16 text-dark/30 mx-auto mb-4" />
+              <p className="text-dark/70 mb-2">
+  Você ainda não possui agendamentos futuros.
+</p>
+<p className="text-sm text-dark/50">
+  Assim que sessões forem agendadas, elas aparecerão aqui. 😊
+</p>
+ 
             </div>
           ) : (
             <div className="space-y-3">
-              {upcomingAppointments.map(appointment => {
+              {filteredAppointments.map(appointment => {
                 const patient = patients.find(p => p.id === appointment.patientId);
                 return (
-                  <div key={appointment.id} className="flex justify-between items-center p-3 bg-white/10 rounded-lg">
-                    <div>
-                      <p className="font-medium text-dark">{patient?.name || 'Paciente não encontrado'}</p>
-                      <p className="text-sm text-dark/70">{new Date(appointment.date).toLocaleDateString('pt-BR')} às {appointment.time}</p>
-                      <p className="text-xs text-dark/60">{appointment.description}</p>
-                    </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      appointment.status === 'agendado' 
-                        ? 'bg-blue-100 text-blue-800' 
-                        : appointment.status === 'iniciado'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-green-100 text-green-800'
-                    }`}>
-                      {appointment.status === 'agendado' ? 'Agendado' :
-                       appointment.status === 'iniciado' ? 'Iniciado' : 'Concluído'}
-                    </span>
-                  </div>
+                  <AppointmentCard
+                    key={appointment.id}
+                    appointment={appointment}
+                    patient={patient}
+                  />
                 );
               })}
             </div>
           )}
-        </Card>
+        </div>
       )}
     </div>
   );
 };
+ 
+* 

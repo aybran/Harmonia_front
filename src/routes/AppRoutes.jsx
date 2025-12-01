@@ -16,6 +16,7 @@ import { About } from '../pages/About';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
 import Contato from '../pages/Contact';
+/*
 // Páginas protegidas
 import { DashboardPsicologo } from '../pages/DashboardPsicologo';
 import { DashboardPaciente } from '../pages/DashboardPaciente';
@@ -28,7 +29,7 @@ import { ChatIA } from '../pages/ChatIA';
 import { HistoricoSessoes } from '../pages/Historico_de_Sessoes';
 import { Solicitacoes } from '../pages/Solicitacoes';
 import { NotFound } from '../pages/NotFound';
-
+*/
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <LoadingSpinner size="lg" />;
